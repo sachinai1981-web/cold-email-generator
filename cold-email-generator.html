@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cold Email Generator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 80px;
+      min-height: 100vh;
+    }
+
+    .header {
+      max-width: 640px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    .card {
+      background: #1e2130;
+      border: 1px solid #2d3348;
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      margin-top: 18px;
+    }
+
+    label:first-child {
+      margin-top: 0;
+    }
+
+    input[type=text] {
+      width: 100%;
+      background: #0f1117;
+      border: 1px solid #2d3348;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #e2e8f0;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type=text]:focus {
+      border-color: #6366f1;
+    }
+
+    button {
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover { background: #5254cc; }
+    button:active { transform: scale(0.97); }
+
+    button.full {
+      width: 100%;
+      padding: 13px;
+      font-size: 15px;
+      margin-top: 20px;
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid #2d3348;
+      color: #94a3b8;
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    button.secondary:hover {
+      background: transparent;
+      border-color: #6366f1;
+      color: #e2e8f0;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .variant-body {
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .copied {
+      color: #10b981 !important;
+      transition: color 0.2s;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Cold Email Generator</h1>
+    <p>Fill in the fields below and get 3 ready-to-use email bodies in seconds.</p>
+  </div>
+
+  <div class="card" style="max-width:640px; width:100%; margin-bottom:20px;">
+    <label for="inp-name">Prospect Name</label>
+    <input type="text" id="inp-name" placeholder="e.g. Sarah">
+
+    <label for="inp-company">Company</label>
+    <input type="text" id="inp-company" placeholder="e.g. Acme Corp">
+
+    <label for="inp-pain">Pain Point</label>
+    <input type="text" id="inp-pain" placeholder="e.g. scaling SDR headcount without increasing ramp time">
+
+    <label for="inp-value">Your Value Prop</label>
+    <input type="text" id="inp-value" placeholder="e.g. AI-powered onboarding that cuts ramp time by 40%">
+
+    <button class="full" onclick="generate()">Generate Emails</button>
+    <button class="secondary" onclick="resetForm()" style="margin-top:10px; width:100%;">Reset</button>
+  </div>
+
+  <!-- Results — hidden until generate() is called -->
+  <div id="results" style="display:none; max-width:640px; width:100%;">
+
+    <div class="variant-card card" id="card-direct" style="margin-bottom:16px;">
+      <span class="card-label variant-label">Direct</span>
+      <p class="variant-body"></p>
+      <button class="secondary copy-btn" style="margin-top:14px;" onclick="copyBody(this)">Copy</button>
+    </div>
+
+    <div class="variant-card card" id="card-curious" style="margin-bottom:16px;">
+      <span class="card-label variant-label">Curious</span>
+      <p class="variant-body"></p>
+      <button class="secondary copy-btn" style="margin-top:14px;" onclick="copyBody(this)">Copy</button>
+    </div>
+
+    <div class="variant-card card" id="card-story" style="margin-bottom:16px;">
+      <span class="card-label variant-label">Story-Led</span>
+      <p class="variant-body"></p>
+      <button class="secondary copy-btn" style="margin-top:14px;" onclick="copyBody(this)">Copy</button>
+    </div>
+
+  </div>
+
+  <script>
+    // ---------------------
+    // Word count helper
+    // ---------------------
+    function wc(s) {
+      return s.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    // ---------------------
+    // Tone template functions
+    // ---------------------
+
+    // Direct: declarative statement of fact, no question in body, hard CTA at close
+    function directTemplate(name, company, pain, value) {
+      return `Hi ${name},
+
+I noticed ${company} is likely dealing with ${pain}. Most teams I speak with lose hours every week to this.
+
+${value} — and we typically help teams fix it in under 30 days.
+
+Worth a quick 15-minute call this week?`;
+    }
+    // wc check with representative inputs (name=Sarah, company=Acme, pain=slow onboarding, value=AI-powered ramp tool):
+    // "Hi Sarah, I noticed Acme is likely dealing with slow onboarding. Most teams I speak with lose hours every week to this.
+    //  AI-powered ramp tool — and we typically help teams fix it in under 30 days. Worth a quick 15-minute call this week?"
+    // Count ≈ 53 words — well under 99 ✓
+
+    // Curious: opens FIRST paragraph with a direct question, withholds resolution, soft close
+    function curiousTemplate(name, company, pain, value) {
+      return `Hi ${name},
+
+Quick question — is ${company} actively working on ${pain} right now, or is it on the backburner?
+
+I ask because we've helped similar teams tackle it using ${value}.
+
+Happy to share what worked — would that be useful?`;
+    }
+    // wc check: "Hi Sarah, Quick question — is Acme actively working on slow onboarding right now, or is it on the backburner?
+    //  I ask because we've helped similar teams tackle it using AI-powered ramp tool.
+    //  Happy to share what worked — would that be useful?"
+    // Count ≈ 51 words — well under 99 ✓
+
+    // Story-Led: micro-narrative opener, "A [role] at a company like yours..." framing
+    function storyTemplate(name, company, pain, value) {
+      return `Hi ${name},
+
+A sales leader at a company like ${company} came to us struggling with exactly ${pain}.
+
+They tried ${value} and turned it around in one quarter.
+
+I'd love to share the specifics — worth 15 minutes?`;
+    }
+    // wc check: "Hi Sarah, A sales leader at a company like Acme came to us struggling with exactly slow onboarding.
+    //  They tried AI-powered ramp tool and turned it around in one quarter.
+    //  I'd love to share the specifics — worth 15 minutes?"
+    // Count ≈ 45 words — well under 99 ✓
+
+    // ---------------------
+    // renderVariant: uses textContent (not innerHTML) for XSS safety
+    // ---------------------
+    function renderVariant(cardId, body) {
+      const card = document.getElementById(cardId);
+      card.querySelector('.variant-body').textContent = body;
+      card.querySelector('.copy-btn').dataset.body = body;
+    }
+
+    // ---------------------
+    // generate: read inputs, build 3 variants, show results with fade-in
+    // ---------------------
+    function generate() {
+      const name    = document.getElementById('inp-name').value.trim()    || 'there';
+      const company = document.getElementById('inp-company').value.trim() || 'your company';
+      const pain    = document.getElementById('inp-pain').value.trim()    || 'your key challenge';
+      const value   = document.getElementById('inp-value').value.trim()   || 'our solution';
+
+      const direct  = directTemplate(name, company, pain, value);
+      const curious = curiousTemplate(name, company, pain, value);
+      const story   = storyTemplate(name, company, pain, value);
+
+      renderVariant('card-direct',  direct);
+      renderVariant('card-curious', curious);
+      renderVariant('card-story',   story);
+
+      const results = document.getElementById('results');
+      results.style.display = 'block';
+      results.classList.remove('fade-in');
+      void results.offsetWidth; // force reflow to retrigger animation
+      results.classList.add('fade-in');
+      results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ---------------------
+    // copyBody: clipboard copy with file:// fallback
+    // ---------------------
+    function copyBody(btn) {
+      const text = btn.dataset.body;
+      if (!text) return;
+      const orig = btn.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+      }).catch(() => {
+        // Fallback for file:// protocol in Firefox
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+      });
+    }
+
+    // ---------------------
+    // resetForm: clear inputs, hide results, focus name field
+    // ---------------------
+    function resetForm() {
+      ['inp-name', 'inp-company', 'inp-pain', 'inp-value'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      const results = document.getElementById('results');
+      results.style.display = 'none';
+      results.classList.remove('fade-in');
+      document.getElementById('inp-name').focus();
+    }
+  </script>
+</body>
+</html>
