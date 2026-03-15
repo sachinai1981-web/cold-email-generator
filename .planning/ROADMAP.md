@@ -26,7 +26,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Every generated email body is under 100 words by design (template structure, not truncation)
   4. User clicks the copy button on any variant and the text lands on their clipboard; the button shows "Copied!" confirmation
   5. User can clear the form and generate for a new prospect without refreshing the page
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Build cold-email-generator.html (HTML structure, CSS, JS template engine, copy/reset)
+- [ ] 01-02-PLAN.md — Human verification: run full smoke checklist, confirm tone quality and clipboard behaviour
 
 ## Progress
 
@@ -35,4 +39,4 @@ Phases execute in numeric order: 1
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Build | 0/? | Not started | - |
+| 1. Build | 0/2 | Not started | - |
