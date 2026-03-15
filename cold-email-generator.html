@@ -144,7 +144,7 @@
 
   <div class="header">
     <h1>Cold Email Generator</h1>
-    <p>Fill in the fields below and get 3 ready-to-use email bodies in seconds.</p>
+    <p>Enter your prospect details — get 3 battle-tested email variants in seconds.</p>
   </div>
 
   <div class="card" style="max-width:640px; width:100%; margin-bottom:20px;">
@@ -155,10 +155,10 @@
     <input type="text" id="inp-company" placeholder="e.g. Acme Corp">
 
     <label for="inp-pain">Pain Point</label>
-    <input type="text" id="inp-pain" placeholder="e.g. scaling SDR headcount without increasing ramp time">
+    <input type="text" id="inp-pain" placeholder="e.g. high SDR ramp time slowing revenue">
 
     <label for="inp-value">Your Value Prop</label>
-    <input type="text" id="inp-value" placeholder="e.g. AI-powered onboarding that cuts ramp time by 40%">
+    <input type="text" id="inp-value" placeholder="e.g. AI onboarding that cuts ramp time by 40%">
 
     <button class="full" onclick="generate()">Generate Emails</button>
     <button class="secondary" onclick="resetForm()" style="margin-top:10px; width:100%;">Reset</button>
@@ -188,133 +188,104 @@
   </div>
 
   <script>
-    // ---------------------
-    // Word count helper
-    // ---------------------
-    function wc(s) {
-      return s.trim().split(/\s+/).filter(Boolean).length;
-    }
+    // --- Template functions (each ~50 words, XSS-safe via textContent) ---
 
-    // ---------------------
-    // Tone template functions
-    // ---------------------
-
-    // Direct: declarative statement of fact, no question in body, hard CTA at close
+    // Direct: statement of fact + hard CTA
     function directTemplate(name, company, pain, value) {
       return `Hi ${name},
 
-I noticed ${company} is likely dealing with ${pain}. Most teams I speak with lose hours every week to this.
+I noticed ${company} is likely dealing with ${pain}. Most sales teams I speak with lose hours every week to this — and it compounds fast.
 
-${value} — and we typically help teams fix it in under 30 days.
+${value}. We typically help teams fix it in under 30 days.
 
 Worth a quick 15-minute call this week?`;
     }
-    // wc check with representative inputs (name=Sarah, company=Acme, pain=slow onboarding, value=AI-powered ramp tool):
-    // "Hi Sarah, I noticed Acme is likely dealing with slow onboarding. Most teams I speak with lose hours every week to this.
-    //  AI-powered ramp tool — and we typically help teams fix it in under 30 days. Worth a quick 15-minute call this week?"
-    // Count ≈ 53 words — well under 99 ✓
 
-    // Curious: opens FIRST paragraph with a direct question, withholds resolution, soft close
+    // Curious: opens with a direct question, withholds resolution, soft close
     function curiousTemplate(name, company, pain, value) {
       return `Hi ${name},
 
-Quick question — is ${company} actively working on ${pain} right now, or is it on the backburner?
+Quick question — is ${company} actively trying to solve ${pain} right now, or is it still on the backburner?
 
-I ask because we've helped similar teams tackle it using ${value}.
+I ask because we've helped teams in similar situations using ${value}. The results surprised them.
 
 Happy to share what worked — would that be useful?`;
     }
-    // wc check: "Hi Sarah, Quick question — is Acme actively working on slow onboarding right now, or is it on the backburner?
-    //  I ask because we've helped similar teams tackle it using AI-powered ramp tool.
-    //  Happy to share what worked — would that be useful?"
-    // Count ≈ 51 words — well under 99 ✓
 
-    // Story-Led: micro-narrative opener, "A [role] at a company like yours..." framing
+    // Story-Led: micro-narrative opener with social proof framing
     function storyTemplate(name, company, pain, value) {
       return `Hi ${name},
 
-A sales leader at a company like ${company} came to us struggling with exactly ${pain}.
+A revenue leader at a company like ${company} came to us six months ago — their team was stuck on ${pain} and it was killing their quarter.
 
-They tried ${value} and turned it around in one quarter.
+They started using ${value} and turned it around in 90 days.
 
-I'd love to share the specifics — worth 15 minutes?`;
+I'd love to share the playbook — worth 15 minutes?`;
     }
-    // wc check: "Hi Sarah, A sales leader at a company like Acme came to us struggling with exactly slow onboarding.
-    //  They tried AI-powered ramp tool and turned it around in one quarter.
-    //  I'd love to share the specifics — worth 15 minutes?"
-    // Count ≈ 45 words — well under 99 ✓
 
-    // ---------------------
-    // renderVariant: uses textContent (not innerHTML) for XSS safety
-    // ---------------------
+    // --- Helpers ---
+
     function renderVariant(cardId, body) {
       const card = document.getElementById(cardId);
       card.querySelector('.variant-body').textContent = body;
       card.querySelector('.copy-btn').dataset.body = body;
     }
 
-    // ---------------------
-    // generate: read inputs, build 3 variants, show results with fade-in
-    // ---------------------
+    function showCopied(btn) {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+    }
+
+    // --- Public API ---
+
     function generate() {
       const name    = document.getElementById('inp-name').value.trim()    || 'there';
       const company = document.getElementById('inp-company').value.trim() || 'your company';
       const pain    = document.getElementById('inp-pain').value.trim()    || 'your key challenge';
       const value   = document.getElementById('inp-value').value.trim()   || 'our solution';
 
-      const direct  = directTemplate(name, company, pain, value);
-      const curious = curiousTemplate(name, company, pain, value);
-      const story   = storyTemplate(name, company, pain, value);
-
-      renderVariant('card-direct',  direct);
-      renderVariant('card-curious', curious);
-      renderVariant('card-story',   story);
+      renderVariant('card-direct',  directTemplate(name, company, pain, value));
+      renderVariant('card-curious', curiousTemplate(name, company, pain, value));
+      renderVariant('card-story',   storyTemplate(name, company, pain, value));
 
       const results = document.getElementById('results');
       results.style.display = 'block';
       results.classList.remove('fade-in');
-      void results.offsetWidth; // force reflow to retrigger animation
+      void results.offsetWidth; // force reflow to re-trigger animation
       results.classList.add('fade-in');
       results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // ---------------------
-    // copyBody: clipboard copy with file:// fallback
-    // ---------------------
     function copyBody(btn) {
       const text = btn.dataset.body;
       if (!text) return;
-      const orig = btn.textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
-      }).catch(() => {
-        // Fallback for file:// protocol in Firefox
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
-      });
+      navigator.clipboard.writeText(text)
+        .then(() => showCopied(btn))
+        .catch(() => {
+          // Fallback for file:// protocol
+          const ta = Object.assign(document.createElement('textarea'), { value: text });
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showCopied(btn);
+        });
     }
 
-    // ---------------------
-    // resetForm: clear inputs, hide results, focus name field
-    // ---------------------
     function resetForm() {
       ['inp-name', 'inp-company', 'inp-pain', 'inp-value'].forEach(id => {
         document.getElementById(id).value = '';
       });
-      const results = document.getElementById('results');
-      results.style.display = 'none';
-      results.classList.remove('fade-in');
+      document.getElementById('results').style.display = 'none';
       document.getElementById('inp-name').focus();
     }
+
+    // Submit on Enter from any input field
+    document.querySelectorAll('input[type=text]').forEach(input => {
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+    });
   </script>
 </body>
 </html>
