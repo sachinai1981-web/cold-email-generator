@@ -52,9 +52,7 @@
       margin-top: 18px;
     }
 
-    label:first-child {
-      margin-top: 0;
-    }
+    label:first-child { margin-top: 0; }
 
     input[type=text] {
       width: 100%;
@@ -68,9 +66,8 @@
       transition: border-color 0.2s;
     }
 
-    input[type=text]:focus {
-      border-color: #6366f1;
-    }
+    input[type=text]:focus { border-color: #6366f1; }
+    input[type=text].error { border-color: #ef4444; }
 
     button {
       background: #6366f1;
@@ -118,6 +115,17 @@
       display: block;
     }
 
+    .subject-line {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+
+    .subject-line strong {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
     .variant-body {
       color: #e2e8f0;
       font-size: 14px;
@@ -144,148 +152,187 @@
 
   <div class="header">
     <h1>Cold Email Generator</h1>
-    <p>Enter your prospect details — get 3 battle-tested email variants in seconds.</p>
+    <p>Fill in the details — get 3 battle-tested email angles, ready to send.</p>
   </div>
 
   <div class="card" style="max-width:640px; width:100%; margin-bottom:20px;">
-    <label for="inp-name">Prospect Name</label>
+    <label for="inp-name">Prospect First Name</label>
     <input type="text" id="inp-name" placeholder="e.g. Sarah">
 
-    <label for="inp-company">Company</label>
+    <label for="inp-company">Their Company</label>
     <input type="text" id="inp-company" placeholder="e.g. Acme Corp">
 
-    <label for="inp-pain">Pain Point</label>
-    <input type="text" id="inp-pain" placeholder="e.g. high SDR ramp time slowing revenue">
+    <label for="inp-pain">Their Pain Point</label>
+    <input type="text" id="inp-pain" placeholder="e.g. slow SDR ramp time eating into quota">
 
     <label for="inp-value">Your Value Prop</label>
     <input type="text" id="inp-value" placeholder="e.g. AI onboarding that cuts ramp time by 40%">
 
-    <button class="full" onclick="generate()">Generate Emails</button>
-    <button class="secondary" onclick="resetForm()" style="margin-top:10px; width:100%;">Reset</button>
+    <button class="full" id="btn-generate">Generate Emails</button>
+    <button class="secondary" id="btn-reset" style="margin-top:10px; width:100%;">Reset</button>
   </div>
 
-  <!-- Results — hidden until generate() is called -->
   <div id="results" style="display:none; max-width:640px; width:100%;">
 
     <div class="variant-card card" id="card-direct" style="margin-bottom:16px;">
-      <span class="card-label variant-label">Direct</span>
+      <span class="card-label">Direct</span>
+      <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
       <p class="variant-body"></p>
-      <button class="secondary copy-btn" style="margin-top:14px;" onclick="copyBody(this)">Copy</button>
+      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
     </div>
 
     <div class="variant-card card" id="card-curious" style="margin-bottom:16px;">
-      <span class="card-label variant-label">Curious</span>
+      <span class="card-label">Curious</span>
+      <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
       <p class="variant-body"></p>
-      <button class="secondary copy-btn" style="margin-top:14px;" onclick="copyBody(this)">Copy</button>
+      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
     </div>
 
     <div class="variant-card card" id="card-story" style="margin-bottom:16px;">
-      <span class="card-label variant-label">Story-Led</span>
+      <span class="card-label">Story-Led</span>
+      <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
       <p class="variant-body"></p>
-      <button class="secondary copy-btn" style="margin-top:14px;" onclick="copyBody(this)">Copy</button>
+      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
     </div>
 
   </div>
 
   <script>
-    // --- Template functions (each ~50 words, XSS-safe via textContent) ---
+    (() => {
+      // Single source of truth for input field IDs
+      const FIELDS = [
+        { id: 'inp-name',    label: 'Prospect Name'  },
+        { id: 'inp-company', label: 'Company'        },
+        { id: 'inp-pain',    label: 'Pain Point'     },
+        { id: 'inp-value',   label: 'Value Prop'     },
+      ];
 
-    // Direct: statement of fact + hard CTA
-    function directTemplate(name, company, pain, value) {
-      return `Hi ${name},
+      // --- Templates ---
+      // Each returns { subject, body }. Rendered via textContent — XSS-safe.
 
-I noticed ${company} is likely dealing with ${pain}. Most sales teams I speak with lose hours every week to this — and it compounds fast.
+      function directTemplate(name, company, pain, value) {
+        return {
+          subject: `${name} — quick thought on ${company}`,
+          body: `Hi ${name},
 
-${value}. We typically help teams fix it in under 30 days.
+${company} isn't the only team I've spoken with that's dealing with ${pain} — it tends to compound faster than people expect.
 
-Worth a quick 15-minute call this week?`;
-    }
+${value}. Most teams see results within 30 days without disrupting what's already working.
 
-    // Curious: opens with a direct question, withholds resolution, soft close
-    function curiousTemplate(name, company, pain, value) {
-      return `Hi ${name},
+Worth a quick 15-minute call this week to see if it's a fit?`,
+        };
+      }
+
+      function curiousTemplate(name, company, pain, value) {
+        return {
+          subject: `Is ${company} actively working on this?`,
+          body: `Hi ${name},
 
 Quick question — is ${company} actively trying to solve ${pain} right now, or is it still on the backburner?
 
-I ask because we've helped teams in similar situations using ${value}. The results surprised them.
+I ask because we've helped teams in your position using ${value}, and the lift was consistently bigger than they expected going in.
 
-Happy to share what worked — would that be useful?`;
-    }
+Happy to share exactly what moved the needle — would that be a useful 15 minutes?`,
+        };
+      }
 
-    // Story-Led: micro-narrative opener with social proof framing
-    function storyTemplate(name, company, pain, value) {
-      return `Hi ${name},
+      function storyTemplate(name, company, pain, value) {
+        return {
+          subject: `How a team like ${company} fixed this in 90 days`,
+          body: `Hi ${name},
 
-A revenue leader at a company like ${company} came to us six months ago — their team was stuck on ${pain} and it was killing their quarter.
+Six months ago a sales leader at a company like ${company} came to us with the same problem — ${pain} was derailing their quarter and nothing was sticking.
 
-They started using ${value} and turned it around in 90 days.
+They implemented ${value} and turned it around in 90 days. Q3 came in above target.
 
-I'd love to share the playbook — worth 15 minutes?`;
-    }
+I'd love to share the exact playbook — worth 15 minutes?`,
+        };
+      }
 
-    // --- Helpers ---
+      // --- Helpers ---
 
-    function renderVariant(cardId, body) {
-      const card = document.getElementById(cardId);
-      card.querySelector('.variant-body').textContent = body;
-      card.querySelector('.copy-btn').dataset.body = body;
-    }
+      function getFieldValues() {
+        return FIELDS.map(({ id }) => document.getElementById(id).value.trim());
+      }
 
-    function showCopied(btn) {
-      const orig = btn.textContent;
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
-    }
-
-    // --- Public API ---
-
-    function generate() {
-      const name    = document.getElementById('inp-name').value.trim()    || 'there';
-      const company = document.getElementById('inp-company').value.trim() || 'your company';
-      const pain    = document.getElementById('inp-pain').value.trim()    || 'your key challenge';
-      const value   = document.getElementById('inp-value').value.trim()   || 'our solution';
-
-      renderVariant('card-direct',  directTemplate(name, company, pain, value));
-      renderVariant('card-curious', curiousTemplate(name, company, pain, value));
-      renderVariant('card-story',   storyTemplate(name, company, pain, value));
-
-      const results = document.getElementById('results');
-      results.style.display = 'block';
-      results.classList.remove('fade-in');
-      void results.offsetWidth; // force reflow to re-trigger animation
-      results.classList.add('fade-in');
-      results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function copyBody(btn) {
-      const text = btn.dataset.body;
-      if (!text) return;
-      navigator.clipboard.writeText(text)
-        .then(() => showCopied(btn))
-        .catch(() => {
-          // Fallback for file:// protocol
-          const ta = Object.assign(document.createElement('textarea'), { value: text });
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-          showCopied(btn);
+      function validate() {
+        let valid = true;
+        FIELDS.forEach(({ id }) => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) { el.classList.add('error'); valid = false; }
         });
-    }
+        return valid;
+      }
 
-    function resetForm() {
-      ['inp-name', 'inp-company', 'inp-pain', 'inp-value'].forEach(id => {
-        document.getElementById(id).value = '';
+      function clearErrors() {
+        FIELDS.forEach(({ id }) => document.getElementById(id).classList.remove('error'));
+      }
+
+      function renderVariant(cardId, { subject, body }) {
+        const card = document.getElementById(cardId);
+        card.querySelector('.subject-text').textContent = subject;
+        card.querySelector('.variant-body').textContent = body;
+        card.querySelector('.copy-btn').dataset.body = `Subject: ${subject}\n\n${body}`;
+      }
+
+      function showCopied(btn) {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard) return navigator.clipboard.writeText(text);
+        // Fallback for file:// protocol
+        const ta = Object.assign(document.createElement('textarea'), { value: text });
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        return Promise.resolve();
+      }
+
+      // --- Actions ---
+
+      function generate() {
+        if (!validate()) return;
+        clearErrors();
+
+        const [name, company, pain, value] = getFieldValues();
+        renderVariant('card-direct',  directTemplate(name, company, pain, value));
+        renderVariant('card-curious', curiousTemplate(name, company, pain, value));
+        renderVariant('card-story',   storyTemplate(name, company, pain, value));
+
+        const results = document.getElementById('results');
+        results.style.display = 'block';
+        results.classList.remove('fade-in');
+        void results.offsetWidth; // force reflow to re-trigger animation
+        results.classList.add('fade-in');
+        results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function resetForm() {
+        FIELDS.forEach(({ id }) => { document.getElementById(id).value = ''; });
+        clearErrors();
+        document.getElementById('results').style.display = 'none';
+        document.getElementById(FIELDS[0].id).focus();
+      }
+
+      // --- Event wiring ---
+
+      document.getElementById('btn-generate').addEventListener('click', generate);
+      document.getElementById('btn-reset').addEventListener('click', resetForm);
+
+      document.querySelectorAll('input[type=text]').forEach(input => {
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+        input.addEventListener('input',   () => input.classList.remove('error'));
       });
-      document.getElementById('results').style.display = 'none';
-      document.getElementById('inp-name').focus();
-    }
 
-    // Submit on Enter from any input field
-    document.querySelectorAll('input[type=text]').forEach(input => {
-      input.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
-    });
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => copyToClipboard(btn.dataset.body || '').then(() => showCopied(btn)));
+      });
+    })();
   </script>
 </body>
 </html>
