@@ -39,4 +39,4 @@ Phases execute in numeric order: 1
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Build | 0/2 | Not started | - |
+| 1. Build | 1/2 | In Progress|  |
