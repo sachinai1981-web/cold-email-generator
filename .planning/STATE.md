@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-14)
 Phase: 1 of 1 (Build)
 Plan: 0 of ? in current phase
 Status: Ready to plan
-Last activity: 2026-03-14 — Roadmap created, project initialized
+Last activity: 2026-03-16 - Completed quick task 260315-qji: Add optional AI generation to cold-email-generator.html
 
 Progress: [█████░░░░░] 50%
 
@@ -75,6 +75,12 @@ None yet.
 ### Blockers/Concerns
 
 None yet.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260315-qji | Add optional AI generation to cold-email-generator.html — Claude API with localStorage API key, fallback to template engine | 2026-03-16 | 48dc472 | [260315-qji-add-optional-ai-generation-to-cold-email](.planning/quick/260315-qji-add-optional-ai-generation-to-cold-email/) |
 
 ## Session Continuity
 
