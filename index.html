@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cold Email Generator</title>
+  <meta name="description" content="Generate 3 battle-tested cold email angles instantly. Fill in your prospect details and get ready-to-send emails — Direct, Curious, and Story-Led.">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f1117;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px 80px;
+      min-height: 100vh;
+    }
+
+    .header {
+      max-width: 640px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 8px;
+    }
+
+    .card {
+      background: #1e2130;
+      border: 1px solid #2d3348;
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      margin-top: 18px;
+    }
+
+    label:first-child { margin-top: 0; }
+
+    input[type=text] {
+      width: 100%;
+      background: #0f1117;
+      border: 1px solid #2d3348;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #e2e8f0;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type=text]:focus { border-color: #6366f1; }
+    input[type=text].error { border-color: #ef4444; }
+
+    button {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover { background: #4338ca; }
+    button:active { transform: scale(0.97); }
+
+    button.full {
+      width: 100%;
+      padding: 13px;
+      font-size: 15px;
+      margin-top: 20px;
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid #2d3348;
+      color: #94a3b8;
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    button.secondary:hover {
+      background: transparent;
+      border-color: #6366f1;
+      color: #e2e8f0;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .subject-line {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+    }
+
+    .subject-line strong {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .variant-body {
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .copied {
+      color: #10b981 !important;
+      transition: color 0.2s;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="header">
+    <h1>Cold Email Generator</h1>
+    <p>Fill in the details — get 3 battle-tested email angles, ready to send.</p>
+  </div>
+
+  <div class="card" style="max-width:640px; width:100%; margin-bottom:20px;">
+    <label for="inp-name">Prospect First Name</label>
+    <input type="text" id="inp-name" placeholder="e.g. Sarah">
+
+    <label for="inp-company">Their Company</label>
+    <input type="text" id="inp-company" placeholder="e.g. Acme Corp">
+
+    <label for="inp-pain">Their Pain Point</label>
+    <input type="text" id="inp-pain" placeholder="e.g. slow SDR ramp time eating into quota">
+
+    <label for="inp-value">Your Value Prop</label>
+    <input type="text" id="inp-value" placeholder="e.g. AI onboarding that cuts ramp time by 40%">
+
+    <button class="full" id="btn-generate">Generate Emails</button>
+    <button class="secondary" id="btn-reset" style="margin-top:10px; width:100%;">Reset</button>
+  </div>
+
+  <div id="results" style="display:none; max-width:640px; width:100%;">
+
+    <div class="variant-card card" id="card-direct" style="margin-bottom:16px;">
+      <span class="card-label">Direct</span>
+      <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
+      <p class="variant-body"></p>
+      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
+    </div>
+
+    <div class="variant-card card" id="card-curious" style="margin-bottom:16px;">
+      <span class="card-label">Curious</span>
+      <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
+      <p class="variant-body"></p>
+      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
+    </div>
+
+    <div class="variant-card card" id="card-story" style="margin-bottom:16px;">
+      <span class="card-label">Story-Led</span>
+      <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
+      <p class="variant-body"></p>
+      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
+    </div>
+
+  </div>
+
+</main>
+  <script>
+    (() => {
+      // Single source of truth for input field IDs
+      const FIELDS = [
+        { id: 'inp-name',    label: 'Prospect Name'  },
+        { id: 'inp-company', label: 'Company'        },
+        { id: 'inp-pain',    label: 'Pain Point'     },
+        { id: 'inp-value',   label: 'Value Prop'     },
+      ];
+
+      // --- Templates ---
+      // Each returns { subject, body }. Rendered via textContent — XSS-safe.
+
+      function directTemplate(name, company, pain, value) {
+        return {
+          subject: `${name} — quick thought on ${company}`,
+          body: `Hi ${name},
+
+${company} isn't the only team I've spoken with that's dealing with ${pain} — it tends to compound faster than people expect.
+
+${value}. Most teams see results within 30 days without disrupting what's already working.
+
+Worth a quick 15-minute call this week to see if it's a fit?`,
+        };
+      }
+
+      function curiousTemplate(name, company, pain, value) {
+        return {
+          subject: `Is ${company} actively working on this?`,
+          body: `Hi ${name},
+
+Quick question — is ${company} actively trying to solve ${pain} right now, or is it still on the backburner?
+
+I ask because we've helped teams in your position using ${value}, and the lift was consistently bigger than they expected going in.
+
+Happy to share exactly what moved the needle — would that be a useful 15 minutes?`,
+        };
+      }
+
+      function storyTemplate(name, company, pain, value) {
+        return {
+          subject: `How a team like ${company} fixed this in 90 days`,
+          body: `Hi ${name},
+
+Six months ago a sales leader at a company like ${company} came to us with the same problem — ${pain} was derailing their quarter and nothing was sticking.
+
+They implemented ${value} and turned it around in 90 days. Q3 came in above target.
+
+I'd love to share the exact playbook — worth 15 minutes?`,
+        };
+      }
+
+      // --- Helpers ---
+
+      function getFieldValues() {
+        return FIELDS.map(({ id }) => document.getElementById(id).value.trim());
+      }
+
+      function validate() {
+        let valid = true;
+        FIELDS.forEach(({ id }) => {
+          const el = document.getElementById(id);
+          if (!el.value.trim()) { el.classList.add('error'); valid = false; }
+        });
+        return valid;
+      }
+
+      function clearErrors() {
+        FIELDS.forEach(({ id }) => document.getElementById(id).classList.remove('error'));
+      }
+
+      function renderVariant(cardId, { subject, body }) {
+        const card = document.getElementById(cardId);
+        card.querySelector('.subject-text').textContent = subject;
+        card.querySelector('.variant-body').textContent = body;
+        card.querySelector('.copy-btn').dataset.body = `Subject: ${subject}\n\n${body}`;
+      }
+
+      function showCopied(btn) {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard) return navigator.clipboard.writeText(text);
+        // Fallback for file:// protocol
+        const ta = Object.assign(document.createElement('textarea'), { value: text });
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        return Promise.resolve();
+      }
+
+      // --- Actions ---
+
+      function generate() {
+        if (!validate()) return;
+        clearErrors();
+
+        const [name, company, pain, value] = getFieldValues();
+        renderVariant('card-direct',  directTemplate(name, company, pain, value));
+        renderVariant('card-curious', curiousTemplate(name, company, pain, value));
+        renderVariant('card-story',   storyTemplate(name, company, pain, value));
+
+        const results = document.getElementById('results');
+        results.style.display = 'block';
+        results.classList.remove('fade-in');
+        void results.offsetWidth; // force reflow to re-trigger animation
+        results.classList.add('fade-in');
+        results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function resetForm() {
+        FIELDS.forEach(({ id }) => { document.getElementById(id).value = ''; });
+        clearErrors();
+        document.getElementById('results').style.display = 'none';
+        document.getElementById(FIELDS[0].id).focus();
+      }
+
+      // --- Event wiring ---
+
+      document.getElementById('btn-generate').addEventListener('click', generate);
+      document.getElementById('btn-reset').addEventListener('click', resetForm);
+
+      document.querySelectorAll('input[type=text]').forEach(input => {
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+        input.addEventListener('input',   () => input.classList.remove('error'));
+      });
+
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => copyToClipboard(btn.dataset.body || '').then(() => showCopied(btn)));
+      });
+    })();
+  </script>
+</body>
+</html>
