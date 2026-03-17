@@ -271,6 +271,32 @@
 
     /* ── Content sits above floating objects ── */
     .header, .card, #results { position: relative; z-index: 1; }
+
+    /* ── Score pill row ── */
+    .score-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      margin-bottom: 4px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .score-pill.green  { background: #dcfce7; color: #15803d; }
+    .score-pill.orange { background: #fff7ed; color: #c2410c; }
+    .score-pill.red    { background: #fee2e2; color: #b91c1c; }
   </style>
 </head>
 <body>
@@ -390,6 +416,10 @@
       <button class="secondary copy-btn" style="margin-top:20px;">Copy</button>
     </div>
 
+    <div style="padding:24px 0 0;">
+      <button class="secondary" id="btn-download-csv">Download CSV</button>
+    </div>
+
   </div>
 
 </main>
@@ -448,6 +478,73 @@ I'd love to share the exact playbook — worth 15 minutes?`,
         };
       }
 
+      // --- Scoring ---
+
+      function scoreEmail(body) {
+        const lower = body.toLowerCase();
+        const [name, company, pain, value] = getFieldValues().map(v => v.toLowerCase());
+
+        // Personalisation: +2 name, +2 company, +2 pain — cap 10
+        let personalisation = 0;
+        if (name    && lower.includes(name))    personalisation += 2;
+        if (company && lower.includes(company)) personalisation += 2;
+        if (pain    && lower.includes(pain.split(' ').slice(0, 3).join(' '))) personalisation += 2;
+        personalisation = Math.min(10, personalisation + 4); // base of 4 so minimum effort shows
+
+        // Value: +3 value prop, +3 number/%, +2 benefit word — cap 10
+        let valueScore = 0;
+        if (value && lower.includes(value.split(' ')[0])) valueScore += 3;
+        if (/\d+\s*%|\d+x|\d{2,}/.test(lower)) valueScore += 3;
+        if (/\b(save|cut|reduce|improve)\b/.test(lower)) valueScore += 2;
+        valueScore = Math.min(10, valueScore);
+
+        // CTA: +4 "15 minutes"/"call", +3 question mark, +2 "worth" — cap 10
+        let cta = 0;
+        if (/15.?min|15 minute|\bcall\b/.test(lower)) cta += 4;
+        if (body.includes('?')) cta += 3;
+        if (/\bworth\b/.test(lower)) cta += 2;
+        cta = Math.min(10, cta);
+
+        // Length scoring
+        const wordCount = body.trim().split(/\s+/).length;
+        let length;
+        if      (wordCount < 80)  length = 10;
+        else if (wordCount < 100) length = 7;
+        else if (wordCount < 130) length = 4;
+        else                      length = 1;
+
+        return { personalisation, value: valueScore, cta, length };
+      }
+
+      function renderScore(cardId, scores) {
+        const card = document.getElementById(cardId);
+
+        // Remove any existing score row (re-render safe)
+        const existing = card.querySelector('.score-row');
+        if (existing) existing.remove();
+
+        const metrics = [
+          { label: 'Personalisation', val: scores.personalisation },
+          { label: 'Value',           val: scores.value           },
+          { label: 'CTA',             val: scores.cta             },
+          { label: 'Length',          val: scores.length          },
+        ];
+
+        const row = document.createElement('div');
+        row.className = 'score-row';
+
+        metrics.forEach(({ label, val }) => {
+          const pill = document.createElement('span');
+          pill.className = 'score-pill ' + (val >= 8 ? 'green' : val >= 5 ? 'orange' : 'red');
+          pill.textContent = `${label} ${val}/10`;
+          row.appendChild(pill);
+        });
+
+        // Insert before the Copy button
+        const copyBtn = card.querySelector('.copy-btn');
+        card.insertBefore(row, copyBtn);
+      }
+
       // --- Helpers ---
 
       function getFieldValues() {
@@ -472,6 +569,7 @@ I'd love to share the exact playbook — worth 15 minutes?`,
         card.querySelector('.subject-text').textContent = subject;
         card.querySelector('.variant-body').textContent = body;
         card.querySelector('.copy-btn').dataset.body = `Subject: ${subject}\n\n${body}`;
+        renderScore(cardId, scoreEmail(body));
       }
 
       function showCopied(btn) {
@@ -602,6 +700,37 @@ I'd love to share the exact playbook — worth 15 minutes?`,
         results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
+      function escapeCSV(str) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+
+      function downloadCSV() {
+        const variants = [
+          { id: 'card-direct',  label: 'Direct'    },
+          { id: 'card-curious', label: 'Curious'   },
+          { id: 'card-story',   label: 'Story-Led' },
+        ];
+
+        const rows = ['Variant,Subject,Body'];
+        variants.forEach(({ id, label }) => {
+          const card    = document.getElementById(id);
+          const subject = card.querySelector('.subject-text').textContent;
+          const body    = card.querySelector('.variant-body').textContent;
+          rows.push([escapeCSV(label), escapeCSV(subject), escapeCSV(body)].join(','));
+        });
+
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url  = URL.createObjectURL(blob);
+        const a    = Object.assign(document.createElement('a'), {
+          href: url,
+          download: 'cold-emails.csv',
+        });
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
       function resetForm() {
         FIELDS.forEach(({ id }) => { document.getElementById(id).value = ''; });
         clearErrors();
@@ -613,6 +742,7 @@ I'd love to share the exact playbook — worth 15 minutes?`,
 
       document.getElementById('btn-generate').addEventListener('click', generate);
       document.getElementById('btn-reset').addEventListener('click', resetForm);
+      document.getElementById('btn-download-csv').addEventListener('click', downloadCSV);
 
       // API key persistence
       const apiKeyInput = document.getElementById('inp-api-key');
