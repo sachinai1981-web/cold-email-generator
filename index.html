@@ -9,142 +9,164 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #0f1117;
-      color: #e2e8f0;
+      background: #ffffff;
+      color: #0a0a0a;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 16px 80px;
+      padding: 80px 24px 120px;
       min-height: 100vh;
     }
 
     .header {
-      max-width: 640px;
+      max-width: 560px;
       width: 100%;
-      margin-bottom: 24px;
+      margin-bottom: 56px;
     }
 
     .header h1 {
-      font-size: 26px;
-      font-weight: 700;
-      color: #f8fafc;
+      font-size: 30px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: #0a0a0a;
     }
 
     .header p {
       font-size: 14px;
-      color: #94a3b8;
-      margin-top: 8px;
+      color: #aaa;
+      margin-top: 10px;
     }
 
     .card {
-      background: #1e2130;
-      border: 1px solid #2d3348;
-      border-radius: 14px;
-      padding: 24px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
     }
 
     label {
       display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      margin-top: 18px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 8px;
+      margin-top: 36px;
     }
 
     label:first-child { margin-top: 0; }
 
-    input[type=text] {
+    input[type=text],
+    input[type=password] {
       width: 100%;
-      background: #0f1117;
-      border: 1px solid #2d3348;
-      border-radius: 8px;
-      padding: 10px 12px;
-      color: #e2e8f0;
-      font-size: 14px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #e0e0e0;
+      border-radius: 0;
+      padding: 10px 0;
+      color: #0a0a0a;
+      font-size: 16px;
       outline: none;
       transition: border-color 0.2s;
     }
 
-    input[type=text]:focus { border-color: #6366f1; }
-    input[type=text].error { border-color: #ef4444; }
+    input[type=text]:focus,
+    input[type=password]:focus { border-bottom-color: #0a0a0a; }
+    input[type=text].error { border-bottom-color: #cc0000; }
 
-    button {
-      background: #4f46e5;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 11px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+    #ai-error {
+      font-size: 12px;
+      color: #cc0000;
+      margin-top: 8px;
+      display: none;
     }
 
-    button:hover { background: #4338ca; }
-    button:active { transform: scale(0.97); }
+    .ai-badge {
+      font-size: 11px;
+      color: #16a34a;
+      font-weight: 500;
+      margin-left: 8px;
+    }
+
+    button {
+      background: #0a0a0a;
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      padding: 15px 28px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.65; }
+    button:active { opacity: 0.45; }
 
     button.full {
       width: 100%;
-      padding: 13px;
-      font-size: 15px;
-      margin-top: 20px;
+      padding: 17px;
+      margin-top: 48px;
     }
 
     button.secondary {
       background: transparent;
-      border: 1px solid #2d3348;
-      color: #94a3b8;
-      font-size: 12px;
-      padding: 6px 12px;
+      border: 1px solid #ddd;
+      color: #aaa;
+      font-size: 11px;
+      padding: 8px 16px;
     }
 
     button.secondary:hover {
-      background: transparent;
-      border-color: #6366f1;
-      color: #e2e8f0;
+      border-color: #0a0a0a;
+      color: #0a0a0a;
+      opacity: 1;
     }
 
     .card-label {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 10px;
+      color: #aaa;
+      margin-bottom: 16px;
       display: block;
     }
 
     .subject-line {
-      font-size: 12px;
-      color: #94a3b8;
-      margin-bottom: 14px;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 16px;
     }
 
     .subject-line strong {
-      color: #a5b4fc;
-      font-weight: 600;
+      color: #0a0a0a;
+      font-weight: 500;
     }
 
     .variant-body {
-      color: #e2e8f0;
-      font-size: 14px;
-      line-height: 1.65;
+      color: #333;
+      font-size: 15px;
+      line-height: 1.75;
       white-space: pre-wrap;
     }
 
     .copied {
-      color: #10b981 !important;
-      transition: color 0.2s;
+      color: #16a34a !important;
+      border-color: #16a34a !important;
+      transition: color 0.2s, border-color 0.2s;
     }
 
     .fade-in {
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.35s ease;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
   </style>
@@ -156,7 +178,7 @@
     <p>Fill in the details — get 3 battle-tested email angles, ready to send.</p>
   </div>
 
-  <div class="card" style="max-width:640px; width:100%; margin-bottom:20px;">
+  <div class="card" style="max-width:560px; width:100%; margin-bottom:20px;">
     <label for="inp-name">Prospect First Name</label>
     <input type="text" id="inp-name" placeholder="e.g. Sarah">
 
@@ -169,31 +191,45 @@
     <label for="inp-value">Your Value Prop</label>
     <input type="text" id="inp-value" placeholder="e.g. AI onboarding that cuts ramp time by 40%">
 
+    <details id="ai-settings" style="margin-top:20px;">
+      <summary style="cursor:pointer; font-size:11px; color:#aaa; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; list-style:none; display:flex; align-items:center; gap:6px;">
+        <span>&#9654;</span> AI Mode <span style="font-weight:400; color:#64748b;">(optional)</span>
+      </summary>
+      <div style="margin-top:12px;">
+        <label for="inp-api-key" style="margin-top:0;">Anthropic API Key</label>
+        <input type="password" id="inp-api-key" placeholder="sk-ant-...">
+        <p style="font-size:11px; color:#64748b; margin-top:6px; line-height:1.5;">
+          Stored in localStorage only. Sent exclusively to api.anthropic.com. Visible in browser DevTools.
+        </p>
+      </div>
+    </details>
+    <p id="ai-error"></p>
+
     <button class="full" id="btn-generate">Generate Emails</button>
     <button class="secondary" id="btn-reset" style="margin-top:10px; width:100%;">Reset</button>
   </div>
 
-  <div id="results" style="display:none; max-width:640px; width:100%;">
+  <div id="results" style="display:none; max-width:560px; width:100%;">
 
-    <div class="variant-card card" id="card-direct" style="margin-bottom:16px;">
+    <div class="variant-card" id="card-direct" style="border-top:1px solid #e8e8e8; padding:32px 0; margin-bottom:0;">
       <span class="card-label">Direct</span>
       <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
       <p class="variant-body"></p>
-      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
+      <button class="secondary copy-btn" style="margin-top:20px;">Copy</button>
     </div>
 
-    <div class="variant-card card" id="card-curious" style="margin-bottom:16px;">
+    <div class="variant-card" id="card-curious" style="border-top:1px solid #e8e8e8; padding:32px 0; margin-bottom:0;">
       <span class="card-label">Curious</span>
       <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
       <p class="variant-body"></p>
-      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
+      <button class="secondary copy-btn" style="margin-top:20px;">Copy</button>
     </div>
 
-    <div class="variant-card card" id="card-story" style="margin-bottom:16px;">
+    <div class="variant-card" id="card-story" style="border-top:1px solid #e8e8e8; border-bottom:1px solid #e8e8e8; padding:32px 0; margin-bottom:0;">
       <span class="card-label">Story-Led</span>
       <p class="subject-line">Subject: <strong class="subject-text"></strong></p>
       <p class="variant-body"></p>
-      <button class="secondary copy-btn" style="margin-top:14px;">Copy</button>
+      <button class="secondary copy-btn" style="margin-top:20px;">Copy</button>
     </div>
 
   </div>
@@ -201,6 +237,9 @@
 </main>
   <script>
     (() => {
+      // localStorage key for Anthropic API key
+      const API_KEY_STORAGE = 'anthropic_api_key';
+
       // Single source of truth for input field IDs
       const FIELDS = [
         { id: 'inp-name',    label: 'Prospect Name'  },
@@ -297,14 +336,105 @@ I'd love to share the exact playbook — worth 15 minutes?`,
 
       // --- Actions ---
 
-      function generate() {
+      function generateWithTemplates(name, company, pain, value) {
+        renderVariant('card-direct',  directTemplate(name, company, pain, value));
+        renderVariant('card-curious', curiousTemplate(name, company, pain, value));
+        renderVariant('card-story',   storyTemplate(name, company, pain, value));
+      }
+
+      async function generateWithAI(name, company, pain, value, apiKey) {
+        const btn = document.getElementById('btn-generate');
+        const errEl = document.getElementById('ai-error');
+        errEl.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Generating with AI...';
+
+        try {
+          const resp = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'anthropic-dangerous-direct-browser-access': 'true',
+            },
+            body: JSON.stringify({
+              model: 'claude-haiku-4-5-20251001',
+              max_tokens: 600,
+              system: 'You are a cold email copywriter for B2B SaaS sales. Write concise, human-sounding cold emails under 100 words each. Never use buzzwords or empty phrases. Each email must feel genuinely different in tone and structure.',
+              messages: [{
+                role: 'user',
+                content: `Generate 3 cold email variants for this prospect:\n- Prospect first name: ${name}\n- Their company: ${company}\n- Their pain point: ${pain}\n- My value proposition: ${value}\n\nReturn ONLY valid JSON in this exact format, no other text:\n{"direct":{"subject":"...","body":"..."},"curious":{"subject":"...","body":"..."},"story":{"subject":"...","body":"..."}}\n\nRules:\n- Each body must be under 100 words\n- Direct: confident opener, state the problem, offer solution, ask for 15 mins\n- Curious: open with a genuine question, reference the pain, offer insight, soft CTA\n- Story-Led: lead with a customer story, tie to their situation, invite them to learn more\n- Do not use filler phrases like "I hope this finds you well"\n- Address the prospect by first name in the opening line`,
+              }],
+            }),
+          });
+
+          if (resp.status === 401) {
+            errEl.textContent = 'Invalid API key. Check your key or remove it to use template mode.';
+            errEl.style.display = 'block';
+            generateWithTemplates(name, company, pain, value);
+            return;
+          }
+          if (resp.status === 429) {
+            errEl.textContent = 'Rate limit reached. Try again in a moment.';
+            errEl.style.display = 'block';
+            generateWithTemplates(name, company, pain, value);
+            return;
+          }
+          if (!resp.ok) {
+            errEl.textContent = `API error (${resp.status}). Using template mode instead.`;
+            errEl.style.display = 'block';
+            generateWithTemplates(name, company, pain, value);
+            return;
+          }
+
+          const data = await resp.json();
+          const raw = data.content[0].text.trim();
+          let parsed;
+          try {
+            parsed = JSON.parse(raw);
+          } catch (_) {
+            errEl.textContent = 'AI output was unexpected — used templates instead.';
+            errEl.style.display = 'block';
+            generateWithTemplates(name, company, pain, value);
+            return;
+          }
+
+          renderVariant('card-direct',  parsed.direct);
+          renderVariant('card-curious', parsed.curious);
+          renderVariant('card-story',   parsed.story);
+
+          // Show AI badge on first card label
+          const firstLabel = document.querySelector('#card-direct .card-label');
+          if (firstLabel && !firstLabel.querySelector('.ai-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'ai-badge';
+            badge.textContent = '· AI';
+            firstLabel.appendChild(badge);
+          }
+
+        } catch (err) {
+          errEl.textContent = 'Could not reach Anthropic API. Check your connection.';
+          errEl.style.display = 'block';
+          generateWithTemplates(name, company, pain, value);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Generate Emails';
+        }
+      }
+
+      async function generate() {
         if (!validate()) return;
         clearErrors();
 
         const [name, company, pain, value] = getFieldValues();
-        renderVariant('card-direct',  directTemplate(name, company, pain, value));
-        renderVariant('card-curious', curiousTemplate(name, company, pain, value));
-        renderVariant('card-story',   storyTemplate(name, company, pain, value));
+        const apiKey = localStorage.getItem(API_KEY_STORAGE);
+
+        if (apiKey) {
+          await generateWithAI(name, company, pain, value, apiKey);
+        } else {
+          generateWithTemplates(name, company, pain, value);
+        }
 
         const results = document.getElementById('results');
         results.style.display = 'block';
@@ -325,6 +455,16 @@ I'd love to share the exact playbook — worth 15 minutes?`,
 
       document.getElementById('btn-generate').addEventListener('click', generate);
       document.getElementById('btn-reset').addEventListener('click', resetForm);
+
+      // API key persistence
+      const apiKeyInput = document.getElementById('inp-api-key');
+      const savedKey = localStorage.getItem(API_KEY_STORAGE) || '';
+      if (savedKey) apiKeyInput.value = savedKey;
+      apiKeyInput.addEventListener('input', () => {
+        const v = apiKeyInput.value.trim();
+        if (v) localStorage.setItem(API_KEY_STORAGE, v);
+        else localStorage.removeItem(API_KEY_STORAGE);
+      });
 
       document.querySelectorAll('input[type=text]').forEach(input => {
         input.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
