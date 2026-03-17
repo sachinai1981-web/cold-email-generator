@@ -416,6 +416,10 @@
       <button class="secondary copy-btn" style="margin-top:20px;">Copy</button>
     </div>
 
+    <div style="padding:24px 0 0;">
+      <button class="secondary" id="btn-download-csv">Download CSV</button>
+    </div>
+
   </div>
 
 </main>
@@ -696,6 +700,37 @@ I'd love to share the exact playbook — worth 15 minutes?`,
         results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
 
+      function escapeCSV(str) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+
+      function downloadCSV() {
+        const variants = [
+          { id: 'card-direct',  label: 'Direct'    },
+          { id: 'card-curious', label: 'Curious'   },
+          { id: 'card-story',   label: 'Story-Led' },
+        ];
+
+        const rows = ['Variant,Subject,Body'];
+        variants.forEach(({ id, label }) => {
+          const card    = document.getElementById(id);
+          const subject = card.querySelector('.subject-text').textContent;
+          const body    = card.querySelector('.variant-body').textContent;
+          rows.push([escapeCSV(label), escapeCSV(subject), escapeCSV(body)].join(','));
+        });
+
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url  = URL.createObjectURL(blob);
+        const a    = Object.assign(document.createElement('a'), {
+          href: url,
+          download: 'cold-emails.csv',
+        });
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
       function resetForm() {
         FIELDS.forEach(({ id }) => { document.getElementById(id).value = ''; });
         clearErrors();
@@ -707,6 +742,7 @@ I'd love to share the exact playbook — worth 15 minutes?`,
 
       document.getElementById('btn-generate').addEventListener('click', generate);
       document.getElementById('btn-reset').addEventListener('click', resetForm);
+      document.getElementById('btn-download-csv').addEventListener('click', downloadCSV);
 
       // API key persistence
       const apiKeyInput = document.getElementById('inp-api-key');
