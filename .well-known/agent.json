@@ -1,0 +1,22 @@
+{
+  "name": "Cold Email Generator",
+  "description": "Generates 3 battle-tested cold email angles (Direct, Curious, Story-Led) from prospect details. Free, browser-based, no signup required.",
+  "url": "https://sachinai1981-web.github.io/cold-email-generator",
+  "contact": {
+    "email": "sachinai1981@gmail.com",
+    "type": "human"
+  },
+  "owner": {
+    "name": "Sachin Rai",
+    "role": "Enterprise Sales Professional",
+    "company": "Freshworks",
+    "linkedin": "https://linkedin.com/in/sachinrai"
+  },
+  "capabilities": [
+    "cold-email-generation",
+    "sales-outreach",
+    "b2b-copywriting"
+  ],
+  "agent_instructions": "This is a browser-based tool. To use it, navigate to the URL and fill in the form fields: prospect_name, prospect_company, prospect_role, pain_point, your_product. The tool generates 3 email variations. For API access or integrations, contact the owner via email.",
+  "llms_txt": "https://sachinai1981-web.github.io/cold-email-generator/llms.txt"
+}

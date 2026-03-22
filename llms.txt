@@ -1,0 +1,24 @@
+# Cold Email Generator
+
+> A free tool that generates 3 battle-tested cold email angles instantly — Direct, Curious, and Story-Led — based on your prospect details.
+
+## What this tool does
+- Input: prospect name, company, role, pain point, your product/service
+- Output: 3 ready-to-send cold email variations with different psychological angles
+- Powered by Claude API (Anthropic) with template engine fallback
+- No signup required, runs entirely in the browser
+
+## Who built this
+Built by Sachin Rai, enterprise sales professional at Freshworks.
+Sachin builds AI-powered sales tools for B2B outreach.
+
+## How to use this tool
+Navigate to the main page, fill in the prospect fields, and click Generate.
+The tool returns 3 email variations you can copy directly.
+
+## Contact
+For questions, collaborations, or feedback: sachinai1981@gmail.com
+
+## Sitemap
+- /index.html — Main cold email generator tool
+- /cold-email-generator.html — Alternative entry point
